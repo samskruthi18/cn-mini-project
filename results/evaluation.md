@@ -1,4 +1,55 @@
 # Performance Evaluation
+# Performance Evaluation
+# Performance Evaluation
+
+## Test Setup
+- Date: 13/11/2026
+- Mininet topology: h1, h2, h3 connected through switch s1
+- Controller: None; static OpenFlow rules installed using Open vSwitch
+- Reservation capacity: 100 Mbps
+- Traffic shaping: 5 Mbps shared TBF limiter
+- Testing tool: iperf3 and ping
+- Number of runs per condition: 1
+
+## Reservation Validation
+
+| Test | Request | Result |
+|---|---|---|
+| Client 1 | 40 Mbps | Accepted |
+| Client 2 | 50 Mbps | Accepted |
+| Additional request | 20 Mbps | Rejected |
+| Manual release | C1 | Successful |
+| Automatic expiry | C1/C2 | Verified |
+| Final status | USED=0 | Successful |
+
+## Performance Results
+
+| Metric | Baseline | SDN-enabled |
+|---|---:|---:|
+| Throughput | 11.4 Gbps | 4.73 Mbps |
+| Average latency | 0.240 ms | 0.383 ms |
+| Packet loss | 0% | 0% |
+
+## Observations
+
+- The server successfully enforced the logical reservation capacity of 100 Mbps.
+- Requests exceeding available capacity were rejected.
+- The SDN policy installed a shared 5 Mbps traffic limiter.
+- Measured SDN-enabled receiver throughput was 4.73 Mbps.
+- The limiter was removed after the final reservation was released.
+- Base OpenFlow forwarding rules remained active after policy cleanup.
+- All tested ping packets were successfully delivered.
+
+## Limitations
+
+- The 5 Mbps limiter is shared across clients rather than allocated individually.
+- The baseline throughput is measured without traffic shaping and is not directly comparable to a shaped physical network.
+- Only one throughput and latency run per condition was recorded.
+- The experiment uses a small Mininet topology.
+
+## Conclusion
+
+The experiment demonstrates successful integration of TCP-based bandwidth reservation with SDN-based traffic control. Reservation validation, capacity management, policy installation, release and expiry were verified. The traffic shaper successfully limited network throughput to approximately 5 Mbps.
 
 ## Test setup
 
