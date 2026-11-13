@@ -20,8 +20,12 @@ timers = {}
 lock = threading.Lock()
 
 
-def call_policy(action, client_ip):
-    request = {"action": action, "client_ip": client_ip}
+def call_policy(action, client_ip, reservation_id):
+    request = {
+        "action": action,
+        "client_ip": client_ip,
+        "reservation_id": reservation_id,
+    }
 
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as policy_socket:
@@ -44,7 +48,7 @@ def expire_reservation(client_id, reservation_id):
             return
 
         client_ip = CLIENT_IPS[client_id]
-        ok, message = call_policy("release", client_ip)
+        ok, message = call_policy("release", client_ip, reservation_id)
 
         if ok:
             del reservations[client_id]
@@ -107,12 +111,12 @@ def handle_client(connection, address):
                         elif bandwidth > available:
                             response = "REJECTED|Insufficient bandwidth"
                         else:
-                            ok, message = call_policy("reserve", client_ip)
+                            reservation_id = uuid.uuid4().hex[:12]
+                            ok, message = call_policy("reserve", client_ip, reservation_id)
 
                             if not ok:
                                 response = f"REJECTED|Policy installation failed|{message}"
                             else:
-                                reservation_id = uuid.uuid4().hex[:12]
                                 reservations[client_id] = {
                                     "bandwidth": bandwidth,
                                     "reservation_id": reservation_id,
@@ -147,7 +151,7 @@ def handle_client(connection, address):
                         if reservation is None:
                             response = "REJECTED|No active reservation"
                         else:
-                            ok, message = call_policy("release", client_ip)
+                            ok, message = call_policy("release", client_ip, reservation["reservation_id"])
 
                             if not ok:
                                 response = f"REJECTED|Policy removal failed|{message}"
