@@ -1,6 +1,6 @@
 import socket
 
-SERVER_HOST = "127.0.0.1"
+SERVER_HOST = "10.0.0.3"
 SERVER_PORT = 5000
 CLIENT_ID = "C2"
 
