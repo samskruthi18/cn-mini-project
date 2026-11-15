@@ -1,0 +1,3 @@
+qdisc tbf 8001: root refcnt 3 rate 5Mbit burst 4Kb lat 400ms 
+ Sent 6467241 bytes 4313 pkt (dropped 0, overlimits 8618 requeues 0) 
+ backlog 0b 0p requeues 0
